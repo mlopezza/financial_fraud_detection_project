@@ -1,6 +1,28 @@
-# data/
+# SQLite 3 dump of database
+*.sqlite
+*.sqlite3
+*.db
 db/*.db
+
+# raw data
+data/raw_data/*.parquet
+
+# processed data
+cleaned_data/cleaned_fraud.parquet
+
+# cached datasets
+.cache/kagglehub/
+
+# Files
+data/data_processing.ipynb
+
+# Jupyter Notebook checkpoints
 .ipynb_checkpoints/
 __pycache__/
 *.pyc
+
+
+
+
+
 .DS_Store
