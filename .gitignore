@@ -6,6 +6,7 @@ db/*.db
 
 # raw data
 data/raw_data/*.parquet
+data/eda_notes.md
 
 # processed data
 cleaned_data/cleaned_fraud.parquet
