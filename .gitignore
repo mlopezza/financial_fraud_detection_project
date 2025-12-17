@@ -17,7 +17,7 @@ cleaned_data/cleaned_fraud.parquet
 # Files
 data/data_processing.ipynb
 data/query_template_script.ipynb
-data/SQL_queries.ipynb
+data/sql_queries.ipynb
 
 # Jupyter Notebook checkpoints
 .ipynb_checkpoints/
