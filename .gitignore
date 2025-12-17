@@ -17,15 +17,13 @@ cleaned_data/cleaned_fraud.parquet
 data/data_processing.ipynb
 data/query_template_script.ipynb
 data/eda_notes.md
-data/SQL_queries.ipynb
+data/sql_queries.ipynb
 
 
 # Jupyter Notebook checkpoints
 .ipynb_checkpoints/
 __pycache__/
 *.pyc
-
-
 
 
 
