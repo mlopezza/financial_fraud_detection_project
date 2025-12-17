@@ -6,7 +6,6 @@ db/*.db
 
 # raw data
 data/raw_data/*.parquet
-data/eda_notes.md
 
 # processed data
 cleaned_data/cleaned_fraud.parquet
@@ -17,7 +16,9 @@ cleaned_data/cleaned_fraud.parquet
 # Files
 data/data_processing.ipynb
 data/query_template_script.ipynb
+data/eda_notes.md
 data/SQL_queries.ipynb
+
 
 # Jupyter Notebook checkpoints
 .ipynb_checkpoints/
