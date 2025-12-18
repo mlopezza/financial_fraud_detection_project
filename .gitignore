@@ -9,6 +9,8 @@ data/raw_data/*.parquet
 
 # processed data
 cleaned_data/cleaned_fraud.parquet
+data/cleaned_data/*.parquet
+
 
 # cached datasets
 .cache/kagglehub/
