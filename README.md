@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Financial Fraud Detection Project
 Detecting financial fraud using data analysis and machine learning techniques. Includes data preprocessing, feature engineering, model training, and evaluation to identify anomalous or high-risk financial transactions.
 
@@ -224,3 +225,7 @@ Feature engineering and model explainability
 ### References
 - 1. Financial Fraud: A Review of Anomaly Detection Techniques and Recent Advances
 Hilal et al. - Expert Systems with Applications - 2022, https://doi.org/10.1016/j.eswa.2021.116429
+=======
+# financial_fraud_detection_project
+Detecting financial fraud using data analysis and machine learning techniques.
+>>>>>>> 4f8ef76 (Initial commit)
