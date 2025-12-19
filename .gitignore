@@ -9,6 +9,8 @@ data/raw_data/*.parquet
 
 # processed data
 cleaned_data/cleaned_fraud.parquet
+data/cleaned_data/*.parquet
+
 
 # cached datasets
 .cache/kagglehub/
@@ -18,6 +20,8 @@ data/data_exploration.ipynb
 data/query_template_script.ipynb
 data/eda_notes.md
 data/sql_queries.ipynb
+data_visualization_draft.ipynb
+data/SQL_cleaning_test.ipynb
 
 
 # Jupyter Notebook checkpoints
