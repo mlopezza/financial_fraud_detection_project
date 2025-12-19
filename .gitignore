@@ -16,6 +16,7 @@ data/cleaned_data/*.parquet
 .cache/kagglehub/
 
 # Files
+data/data_exploration.ipynb
 data/data_processing.ipynb
 data/query_template_script.ipynb
 data/eda_notes.md
