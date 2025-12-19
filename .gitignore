@@ -14,7 +14,7 @@ cleaned_data/cleaned_fraud.parquet
 .cache/kagglehub/
 
 # Files
-data/data_processing.ipynb
+data/data_exploration.ipynb
 data/query_template_script.ipynb
 data/eda_notes.md
 data/sql_queries.ipynb
