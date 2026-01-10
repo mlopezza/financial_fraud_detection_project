@@ -1,0 +1,16 @@
+{
+  "timestamp": "2026-01-07T18:31:34.914117",
+  "model_type": "LogisticRegression_with_SMOTE",
+  "test_set_size": 820698,
+  "metrics": {
+    "accuracy": 0.10319508515921813,
+    "precision": 0.043774738716147794,
+    "recall": 0.9352844532316004,
+    "f1_score": 0.08363505067357255,
+    "roc_auc": 0.5001687759024259
+  },
+  "class_distribution": {
+    "train_fraud_percentage": 0.043756086668987865,
+    "test_fraud_percentage": 0.04375665591971712
+  }
+}

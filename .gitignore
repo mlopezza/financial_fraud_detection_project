@@ -23,6 +23,8 @@ data/eda_notes.md
 data/sql_queries.ipynb
 data_visualization_draft.ipynb
 data/SQL_cleaning_test.ipynb
+./models/model_1_next_steps.py
+models/model_1_next_steps.py
 
 
 # Jupyter Notebook checkpoints
