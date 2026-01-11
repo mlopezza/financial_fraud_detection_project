@@ -53,17 +53,17 @@ Financial fraud has increased substantially in recent years, costing institution
 This project focuses on developing a machine learning model capable of accurately detecting fraudulent credit card transactions, enabling faster identification, intervention, and protection for all stakeholders.
 
 ### Dataset Fraud Detection Scores: 
-The dataset selected from Kaggle contains 5 million synthetically generated financial transactions. It is designed to simulate real‑world behavior for fraud detection research and machine learning applications.
+The dataset selected from Kaggle consists of 5 million synthetically generated financial transactions. It is designed to simulate real-world transactional behavior for fraud detection research and machine learning applications.
 
-The dataset includes 18 attibutes, among them the target variable is_fraud and three different types of anomaly scores: spending_deviation_score, velocity_score, and geo_anomaly_score.
+The dataset includes 18 attributes, among them the target variable is_fraud and three types of anomaly scores: spending_deviation_score, velocity_score, and geo_anomaly_score.
 
 - **Velocity Score:** 
-    The transaction velocity, in a fraud context, is calculated by counting the number of transactions that take place in an account during a pre‑specified timeframe (Wiese & Omlin, 2009). Different velocity measures can be created by grouping certain merchants into a single velocity calculation.
-
-    The score is typically calculated by counting the number of transactions per unit of time and comparing it with historical averages. A high velocity score indicates unusually rapid activity, which may suggest potential card theft or automated fraud. A low score generally reflects a normal transaction pace.
+    The score is typically calculated by counting the number of transactions per unit of time and comparing it with historical averages. 
+    
+    A high velocity score indicates unusually rapid activity, which may suggest potential card theft or automated fraud. A low score generally reflects a normal transaction pace.
 
 - **Spending Deviation Score:**
-    It measures how unusual a transaction amount is compared to the customer’s historical spending. Its calculation is often based on statistical deviation (e.g., a z‑score). 
+    It measures how unusual a transaction amount is compared to the customer’s historical spending. 
     
     A high score indicates that the transaction amount is far from the customer’s normal pattern and may signal potential fraud. A low score suggests the transaction is consistent with past behavior.
 
@@ -74,28 +74,28 @@ The dataset includes 18 attibutes, among them the target variable is_fraud and t
    
 
 
-### Features description
+### Feature description: 
 
-| Feature | Type | Description |
-| :--- | :--- | :--- |
-| `transaction_id` | VARCHAR | Unique identifier for each transaction. |
-| `timestamp` | TIMESTAMP | Date and time the transaction occurred. ISO8601 |
-| `sender_account` | VARCHAR | Sender account number. |
-| `receiver_account` | VARCHAR | Destination account number. |
-| `amount` | DOUBLE | Transaction value. |
-| `transaction_type` | VARCHAR | Transfer, Withdrawal, Payment, Deposit. |
-| `merchant_category` | VARCHAR | Restaurant, travel, other, retail, online, entertainment, utilities, grocery. |
-| `location` | VARCHAR | London, Sydney, New York, Berlin, Tokyo, Dubai, Singapore, Toronto. |
-| `device_used` | VARCHAR | mobile, atm, web, pos. |
-| `is_fraud` | BOOLEAN | Binary flag indicating fraud (1) or legitimate (0). |
-| `fraud_type` | VARCHAR | Card not present, Nome. |
-| `time_since_last_transaction` | DOUBLE | Time elapsed since the user's previous transaction. |
-| `spending_deviation_score` | DOUBLE | Score representing deviation from typical spending habits. |
-| `velocity_score` | BIGINT | Measure of transaction frequency in a short window. |
-| `geo_anomaly_score` | DOUBLE | Score based on unusual distance between transactions. |
-| `payment_channel` | VARCHAR | wire_transfer, ACH, card, UPI. |
-| `ip_address` | VARCHAR | IP address from which the transaction was initiated. |
-| `device_hash` | VARCHAR | Unique digital fingerprint of the hardware. |
+| Feature                       | Type      | Distinct Values | Description                                              | Notes                                                                 |
+|-------------------------------|-----------|-----------------|----------------------------------------------------------|-----------------------------------------------------------------------|
+| transaction_id                | VARCHAR   | 5,000,000       | Unique identifier for each transaction.                  | All unique.                                                           |
+| timestamp                     | TIMESTAMP | 4,999,998       | Date and time the transaction occurred (ISO8601).        | Two timestamps are duplicated; no nulls. Useful for extracting month/day/hour.  |
+| sender_account                | VARCHAR   | 896,513         | Sender account number (hashed).                           | High cardinality.                                                     |
+| receiver_account              | VARCHAR   | 896,639         | Destination account number (hashed).                     | High cardinality.                                                     |
+| amount                        | DOUBLE    | 217,068         | Monetary value of the transaction.                       | Ranges from 0.01 to 3520.57; may be bucketed into ranges. |
+| transaction_type              | VARCHAR   | 4               | deposit, payment, transfer, withdrawal.                  | Categorical.                                                          |
+| merchant_category             | VARCHAR   | 8               | entertainment, grocery, online, other, restaurant, retail, travel, utilities. | Categorical.                                      |
+| location                      | VARCHAR   | 8               | Berlin, Dubai, London, New York, Singapore, Sydney, Tokyo, Toronto. | Geographic categorical.                           |
+| device_used                   | VARCHAR   | 4               | atm, mobile, pos, web.                                   | Device used to initiate the transaction.                              |
+| is_fraud                      | BOOLEAN   | 2               | Binary flag indicating fraud (1) or legitimate (0).      | Binary target variable.                                               |
+| fraud_type                    | VARCHAR   | 2               | card_not_present, none.                                  | Very low value; candidate for removal or merging.                     |
+| time_since_last_transaction   | DOUBLE    | 4,103,488       | Time elapsed since the user's previous transaction.      | Ranges from -8777.81 to 8757.76; may be bucketed into time ranges or outlier handling. |
+| spending_deviation_score      | DOUBLE    | 917             | Deviation from typical spending habits.                  | Ranges from -5.26 to 5.02. Continuous.        |
+| velocity_score                | BIGINT    | 20              | Measure of transaction frequency in a short window.      | Discrete range from 1 to 20.                                                  |
+| geo_anomaly_score             | DOUBLE    | 101             | Score based on unusual distance between transactions.    | Ranges from 0 to 1 (decimal).                         |
+| payment_channel               | VARCHAR   | 4               | ACH, UPI, card, wire_transfer.                           | Categorical.                                                          |
+| ip_address                    | VARCHAR   | 4,997,068       | IP address from which the transaction was initiated (hashed).  | Very high cardinality.                                                |
+| device_hash                   | VARCHAR   | 3,835,723       | Unique digital fingerprint of the hardware (hashed).     | Very high cardinality.                                                |
 
 
 
@@ -103,85 +103,92 @@ The dataset includes 18 attibutes, among them the target variable is_fraud and t
 #### Data Exploration
 The downloaded CSV file containing the original dataset was converted into columnar Parquet files, which are much faster to query. After that, data exploration and cleaning were performed using SQL queries in DuckDB to improve memory efficiency.
 
-First data exploration found that the data set spans the period of one year from 2023-01-01 to 2024-01-01. In adition, the timestamp column is stored in a consistent internal format (as TIMESTAMP type) therefore it does not need to be adjusted.
+The initial data exploration revealed that the dataset has a significant class imbalance. Out of 5 million transactions, the number of positive fraud cases is 179,553, while negative (non-fraud) cases total 4,820,447, resulting in a fraud ratio of 0.035911 and a non-fraud ratio of 0.964089.
+
+The dataset spans a one-year period, from 2023-01-01 to 2024-01-01. In addition, all columns are stored in a consistent internal format, and no random spaces were found; therefore, no adjustments were required.
 
 
-- All columns are stored in a consistent internal format, therefore it does not need to be adjusted.
-- Unique Values: 
-Distinct Values by Column
+**Missing and Null Values**
 
-| Column                        | Distinct Values | Notes / Description |
-|-------------------------------|-----------------|---------------------|
-| transaction_id                | 5,000,000       | Each transaction has a unique ID. |
-| timestamp                     | 4,999,998       | Two timestamps are duplicated; no nulls. Useful for extracting month/day/hour. |
-| sender_account                | 896,513         | Likely hashed for privacy. |
-| receiver_account              | 896,639         | Likely hashed for privacy. |
-| amount                        | 217,068         | Ranges from 0.01 to 3520.57; may be bucketed into ranges. |
-| transaction_type              | 4               | deposit, payment, transfer, withdrawal. |
-| merchant_category             | 8               | entertainment, grocery, online, other, restaurant, retail, travel, utilities. |
-| location                      | 8               | Berlin, Dubai, London, New York, Singapore, Sydney, Tokyo, Toronto. |
-| device_used                   | 4               | atm, mobile, pos, web. |
-| is_fraud                      | 2               | 0 = non‑fraud, 1 = fraud. |
-| fraud_type                    | 2               | card_not_present, none. Low value; candidate for removal. |
-| time_since_last_transaction   | 4,103,488       | Ranges from -8777.81 to 8757.76; may be bucketed into time ranges. |
-| spending_deviation_score      | 917             | Ranges from -5.26 to 5.02. |
-| velocity_score                | 20              | Ranges from 1 to 20. |
-| geo_anomaly_score             | 101             | Ranges from 0 to 1 (decimal). |
-| payment_channel               | 4               | ACH, UPI, card, wire_transfer. |
-| ip_address                    | 4,997,068       | Likely hashed for privacy. |
-| device_hash                   | 3,835,723       | Likely hashed for privacy. |
+Data exploration identified two features with NULL values: time_since_last_transaction (896,513) and fraud_type (4,820,447). 
+
+However, no NULL values were found among positive fraud cases. All NULL values belong to the is_fraud = FALSE category, as this group contains the largest number of observations, with a non-fraud transaction ratio of 0.96 compared to a fraud transaction ratio of 0.035. Therefore, removing records with NULL values does not affect the minority class, which is also the class of interest for identifying fraud patterns.
 
 
-#### Check the relevance of repeat values on sender_account, receiver_account, ip_address, device_hash
-6. There were found repetition in fraud cases positive when we look for sender acound and receiver acount
-    - Sender Acount with fraud positive: Min repetitions: 2,  max repetitions: 7
-    - Receiver Acount with fraud positive:  Min repetitions: 2 , max repetitions: 5
-sender_account (896,513 unique values) and receiver_account (896,639 unique values) come from a dataset of 5 million transactions. It is important to check whether these values repeat within the fraud‑positive cases. The same applies to ip_address (4,997,068 unique values) and device_hash (3,835,723 unique values).
+**Identifier Features for Future Anonymization**
 
-There were repeated values found in several features: sender_account had 16,337 repeated values with a maximum of 7 repetitions; receiver_account had 15,604 repeated values with a maximum of 5 repetitions; ip_address had 6 repeated values with a maximum of 2 repetitions; and device_hash had 1,757 repeated values with a maximum of 3 repetitions.
-
-The results suggest that fraudulent activity in this dataset is highly concentrated in specific accounts, moderately concentrated in certain devices, and minimally traceable through IP addresses, which aligns with typical fraud behaviors involving account compromise, device reuse, and IP obfuscation.
-
-Both sender_account and receiver_account show a highly skewed distribution of repetitions. The vast majority of accounts appear only once or twice, while very few accounts repeat multiple times. In sender_account, only one value appears 7 times and two values appear 5 times, compared with more than 145,000 values that appear only once. A similar pattern is observed in receiver_account, where just one value appears 5 times and most values occur only once. This indicates that repeated accounts are extremely rare, and the dataset is dominated by unique or low‑frequency account identifiers.
-
-There were not found any ramdom spaces. 
-
-2.  Missing and Null Values were found in 2 columns: 
-    - fraud_type_nulls = 4820447
-    - time_since_last_transaction_nulls = 896513
-    - However, there where not found any null value between the fraud_cases positive. 
-    Data exploration identified two (2) features with NULL values: time_since_last_transaction (896513) and fraud_type (4820447). Queries were conducted to understand the number of NULL values ​​per feature and the proportion of NULL and non-NULL values ​​per feature to determine the best way to address the NULL values.
-
-    All NULL values are in the "is_fraud = FALSE" category because this group contains the largest number of observations, with a non‑fraud transaction ratio of 0.96 versus a fraud transaction ratio of 0.035. Therefore, dropping the NULL values does not affect the minority class which is also the clase of interest to found patterns.
+sender_account, receiver_account, transaction_id, ip_address and device_hash.
 
 
-3. The numner of positive fraud cases were: 179553 with negative fraud cases = 4820447, with fraud_ratio = 0.035911 and no_fraud_ratio = 0.964089
-4. From the all positive fraud cases there were divided as follow payment_channel: 
-    - wire_transfer	45034
-    - UPI	44896
-    - card	44885
-    - ACH	44738
-    Fraud cases were found across all payment_channel categories, which indicates that all categories are significant.
+**Unique Values and repetitions:**
 
-5. From Fraud Cases positive: 
-   - Min amount = 0.01 and Max Amount = 	3128.14
-   - On time since last transaction were found some negative values, we didn't found any information on the data set about how it was calculated or why there are some negative values, a posible conclusion is that this negative values means the time difference between diferent locations?
-        - Min time since last transaction: -8748.166439	(89880 fraud cases with negative value) and maximum time since last transaction = 8744.774704 (89673 fraud cases with positive value)
+Repeated values were found among the identifier features. Sender_account and receiver_account showed potential anomalies, with 896,513 and 896,639 unique values, respectively, in a dataset of 5 million transactions. For this reason, a deeper analysis was performed focusing on fraud-positive cases.
 
-Negative values were found only in the time_since_last_transaction feature, ranging from -8777.814182 to 8757.758483. According to the dataset authors, this variable represents the number of hours since the user’s previous transaction. The values may reference the approximate number of hours in a year (8760 hours). However, the negative values are illogical—for example, they would imply that some transactions occur in the future relative to the previous one.
+In the fraud-positive transactions, sender_account had 16,337 repeated values, with a maximum of 7 repetitions, while receiver_account had 15,604 repeated values, with a maximum of 5 repetitions. 
 
-Additional queries were conducted to understand why these negative values appear. One possible explanation was that time differences might have been calculated using transactions recorded in different time zones. To test this, the analysis examined whether negative values were concentrated in specific geographic locations. No correlation was found between negative time_since_last_transaction values and any particular location.
+These results suggest that fraudulent activity is highly concentrated in specific accounts.
 
-Furthermore, in another attempt to interpret these negative values, the data was grouped by sender_account, ordered by timestamp, and the time difference between each transaction and the previous one was recalculated. This analysis also revealed no meaningful pattern, likely because the dataset does not include all transaction records for each user. As a result, there is no reliable timeline available to compute this feature accurately.
+Both sender_account and receiver_account show a highly skewed distribution. Most accounts appear only once or twice, while very few accounts appear multiple times. For example, in sender_account, only one value appears 7 times and two values appear 5 times, compared to more than 145,000 values that appear only once. A similar pattern is observed for receiver_account, indicating that repeated accounts are extremely rare and that the dataset is dominated by unique or low-frequency account identifiers.
 
+**Negative values on time_since_last_transaction**
 
+Negative values were found in the time_since_last_transaction feature. The dataset does not provide information about how this variable was calculated or why negative values exist.
 
+The minimum value is -8748.17 (with 89,880 fraud cases showing negative values), and the maximum value is 8744.77 (with 89,673 fraud cases showing positive values). These values are close to the approximate number of hours in a year (8,760), but negative values are illogical because they would imply that some transactions occurred in the future relative to previous ones.  
 
+Additional analyses were performed to understand this behavior. First, it was tested whether negative values were related to specific geographic locations, possibly due to time zone differences, but no correlation was found.
 
+Finally, transactions were grouped by sender_account, ordered by timestamp, and the time differences were recalculated. This approach also showed no meaningful pattern, likely because the dataset does not contain complete transaction histories for each user. As a result, this feature cannot be reliably reconstructed or interpreted.
+
+**Other Features**
+
+Fraud cases were found across all payment_channel categories, which indicates that all categories are significant.
+From Fraud Cases positive: the Min amount was 0.01 and Max Amount was	3128.14
+
+### Data cleaning
+Data cleaning was conducted with SQL queries and The cleaned table was saved as a Parquet file for modeling.
+
+#### Feature engineering: 
+-  timestamp was divided in diferent columns: month, day, hour.
+- it was creates a new column for Day of the week using ISODOW format. 
+
+#### Drop features: 
+-  timestamp. 
+-  fraud_type
+-  transaction_id
+-  NULL rows from time_since_last_transaction, after that there were 3923934 negative fraud cases and positive fraud cases initial number: 179553 were not altered. 
+
+The ip_address and device_hash features were removed considering:
+- Both are cardinal columns
+- ip_adress had only	6 repetitie values in fraud cases and a maximum of 2 repetitions.
+- device_hash	had 1,757 repeated values and a maximum of 3 repetitions.
+- Fraudulent activity is moderately concentrated in certain devices and minimally traceable through IP addresses. Given the dataset size, both features contribute little information, and their removal reduces noise and dimensionality.
+
+#### Final Features Selected: 
+- sender_account
+- receiver_account
+- amount
+- transaction_type
+- merchant_category
+- location
+- device_used
+- is_fraud
+- time_since_last_transaction
+- spending_deviation_score
+- velocity_score
+- geo_anomaly_score
+- payment_channel
+- year
+- month
+- day_of_month
+- hour
+- day_of_week
 
 ### Data Analysis
 
  **** As previously discussed, there is also a cost for undetected fraud over time, which means that the value of fraud detection is a function of time (Bhattacharyya et al., 2011). The sooner the detection of fraudulent activity, the less the potential losses by individuals and companies. This is especially important to keep in mind as the typical fraudster has been known to exploit credit cards by spending as much as possible in as little time as possible until the fraud is detected and the card is deactivated (Bolton & Hand, 2002). 
+
+VEL score:  The transaction velocity, in a fraud context, is calculated by counting the number of transactions that take place in an account during a pre‑specified timeframe (Wiese & Omlin, 2009). Different velocity measures can be created by grouping certain merchants into a single velocity calculation.
 
 
 After data exploration with SQL and a exploratory data visualization, with literature review
