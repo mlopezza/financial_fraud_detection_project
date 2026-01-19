@@ -5,7 +5,7 @@ Detecting financial fraud using data analysis and machine learning techniques. I
 ## Type of project
 
 - Data exploration with SQL
-- Data visualization wiht Python
+- Data visualization with Python
 - Predictive model
 
 ## Repository Structure
@@ -38,7 +38,7 @@ Detecting financial fraud using data analysis and machine learning techniques. I
 
 ## Chosen Dataset: Financial Transactions Dataset for Fraud Detection
 
-- URL: https://www.kaggle.com/datasets/aryan208/financial-transactions-dataset-for-fraud-detection/data
+- URL: <https://www.kaggle.com/datasets/aryan208/financial-transactions-dataset-for-fraud-detection/data>
 
 ## Project Overview
 
@@ -79,7 +79,7 @@ Tasks:
 - Research regulatory and compliance requirements
 - Define scope of fraud types (transactional, identity theft, etc.)
 
-# Questions
+## Questions
 
 1. Types of transaction_type
 2. Types of merchant_category
@@ -148,14 +148,14 @@ Feature engineering and model explainability
 1. From Fraud Cases positive:
 
    - Min amount = 0.01 and Max Amount = 3128.14
-   - On time since last transaction were found some negative values, we didn't found any information on the data set about how it was calculated or why there are some negative values, a posible conclusion is that this negative values means the time difference between diferent locations?
+   - On time since last transaction were found some negative values, we didn't found any information on the data set about how it was calculated or why there are some negative values, a possible conclusion is that this negative values means the time difference between different locations?
      - Min time since last transaction: -8748.166439 (89880 fraud cases with negative value) and maximum time since last transaction = 8744.774704 (89673 fraud cases with positive value)
 
-1. There were found repetition in fraud cases positive when we look for sender acound and receiver acount
-   - Sender Acount with fraud positive: Min repetitions: 2, max repetitions: 7
-   - Receiver Acount with fraud positive: Min repetitions: 2 , max repetitions: 5
+1. There were found repetition in fraud cases positive when we look for sender account and receiver account
+   - Sender Account with fraud positive: Min repetitions: 2, max repetitions: 7
+   - Receiver Account with fraud positive: Min repetitions: 2 , max repetitions: 5
 
-##### Assesment of distinct values by column:
+##### Assessment of distinct values by column
 
 - transaction_id: 5 million unique values, this is logical as there are 5 million rows and each transaction should have its own unique value.
 
@@ -163,7 +163,7 @@ Feature engineering and model explainability
 
 - sender_account: 896,513 unique values (may be hashed for PI reasons)
 
-- receiver_account: 896639 unique values (may be hashed for PI reaons)
+- receiver_account: 896639 unique values (may be hashed for PI reasons)
 
 - amount: 217,068 unique values that range from 0.01 to 3520.57. We may want to consider converting amount into ranges or categories of some sort when feature engineering.
 
@@ -181,7 +181,7 @@ Feature engineering and model explainability
 
 - time_since_last transaction: 4,103,488 unique values. Ranges from -8777.814182 to 8757.758483 We may want to convert into range or categories of some sort when feature engineering (ex. less than one minute, less than 5 minutes etc).
 
-- spending_deviation_score: 917 unique values; raning from -5.26 to 5.02
+- spending_deviation_score: 917 unique values; ranging from -5.26 to 5.02
 
 - velocity_score: 20 unique values; ranges from 1-20
 
@@ -233,4 +233,4 @@ Feature engineering and model explainability
 ### References
 
 - 1. Financial Fraud: A Review of Anomaly Detection Techniques and Recent Advances
-     Hilal et al. - Expert Systems with Applications - 2022, https://doi.org/10.1016/j.eswa.2021.116429
+     Hilal et al. - Expert Systems with Applications - 2022, <https://doi.org/10.1016/j.eswa.2021.116429>
