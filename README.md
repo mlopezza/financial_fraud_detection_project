@@ -52,6 +52,16 @@ Financial fraud has increased substantially in recent years, costing institution
 
 This project focuses on developing a machine learning model capable of accurately detecting fraudulent credit card transactions, enabling faster identification, intervention, and protection for all stakeholders.
 
+#### Stakeholders
+- Financial Institutions
+   - Minimize financial losses by strengthening early detection of fraudulent transactions and reducing the impact of high‑risk events.
+
+    - Identify complex and previously undetected fraud patterns to support the development of proactive, data‑driven prevention strategies and enhance the overall effectiveness of fraud‑mitigation systems.
+
+- Customers
+    - Benefit from increased protection of their accounts and reduced exposure to fraudulent activity.
+
+
 ### Dataset Fraud Detection Scores: 
 The dataset selected from Kaggle consists of 5 million synthetically generated financial transactions. It is designed to simulate real-world transactional behavior for fraud detection research and machine learning applications.
 
@@ -184,24 +194,53 @@ The ip_address and device_hash features were removed considering:
 - hour
 - day_of_week
 
-### Data Analysis
-
- **** As previously discussed, there is also a cost for undetected fraud over time, which means that the value of fraud detection is a function of time (Bhattacharyya et al., 2011). The sooner the detection of fraudulent activity, the less the potential losses by individuals and companies. This is especially important to keep in mind as the typical fraudster has been known to exploit credit cards by spending as much as possible in as little time as possible until the fraud is detected and the card is deactivated (Bolton & Hand, 2002). 
-
-VEL score:  The transaction velocity, in a fraud context, is calculated by counting the number of transactions that take place in an account during a pre‑specified timeframe (Wiese & Omlin, 2009). Different velocity measures can be created by grouping certain merchants into a single velocity calculation.
-
-
-After data exploration with SQL and a exploratory data visualization, with literature review
-
-
-
 ### Predictive Model
 #### Model Purpose
+The purpose of this predictive model is to detect and flag potentially fraudulent financial transactions with high accuracy. It was used selected features from the original dataset and newly engineered variables designed to enhance predictive power. By maximizing the detection rate of fraudulent activity, the system aims to reduce financial losses, protect users, and strengthen the risk‑management capabilities of financial institutions. 
+
+
 #### Building the Model
-#### Model Performance
+- The final pipeline consists of three main steps: Preprocessing, SMOTE (Synthetic Minority Oversampling Technique), and Model training.
+
+- All preprocessing tasks and SMOTE are applied automatically within the cross‑validation process to ensure proper class balancing and prevent data leakage.
+
+
+**MODEL 1:** 
+- The features were separed in categorical and numerical and were dropped the high-cardinality identifiers ('sender_account', 'receiver_account', 'ip_address', 'device_hash'), that do not generalize well and can negatively affect the model training.
+
+- Date was dropped because we already extracted more meaningful features like hours and days of the week. 
+
+- Data was split between training and test before apply transformers: OneHotEncoder on categorical and StandardScaler on numerical features.
+
+**MODEL 2: fraud_model_smote_undersample** 
+- On model 2 were develop feature engieneere to generate new Fraud-Specific Features: 
+    - Transaction frequency features grouped by sender_account according with amount ( mean, std, count) and unique locations to get behavioral patterns.
+    - Time-based features: From date was stract: hour of day, night‑time flag (0 to 5h), business‑hours flag (9 to 17h).
+    - Transaction amount‑based: transformations with log‑scaled amount and z‑score.
+    - Behavioral anomaly scores: using existing anomaly scores.
+    - Integrated payment‑method risk encoding
+    - Were created the final enhanced dataset with all engineered fraud‑specific features.
+- Train and test dataset were split sorting transactions chronologically, allocating the oldest 80% (Jan 2023 to Oct 2023) for training and the most recent 20% (Oct 2023 to Jan 2024) for testing to avoid temporal leakage, and falling back to a stratified split when time data was unavailable. 
+- Final Dataset for this model had 3.282.789 (train) and 820.698 (test) rows, and closely aligned fraud rates (~4.37% vs. ~4.40%).
+- There were dropped  high-cardinality categorical features ('ip_address', 'device_hash', 'location') using only useful features there where as result 4 categorical  and 17 numerical features. 
+- For categorical were Use target encoding instead of one-hot (better for trees and saves memory)
+- For severe imbalance, SMOTE Alone Isn't Enough (22:1 imbalance ratio). Therefore, we used combination approach: SMOTE with strategic undersampling. With oversample minority class to 10%, and Target 10% fraud in training, in addition were Use fewer neighbors for sparse minority. The Target class ratio after resampling were 25% fraud (1:3).
+
+- After Smote, were train and evaluate multiple models on the training and test (no-smote) data. All four models evaluated (Logistic Regression, Random Forest, XGBoost, and LightGBM) struggle to distinguish fraud from non‑fraud, with low precision and weak PR‑AUC. They detect some fraudulent cases, but their performance is too limited and unstable for real‑world deployment.
+    
+
+
+**MODEL 3:**
+
+**Interpretation of coefficients:**
+- Positive coefficients → increase the probability of fraud.
+- Negative coefficients → decrease the probability of fraud.
+- The magnitude of the coefficient (|coef|) indicates its importance.
+- Categorical variables appear expanded due to the OneHotEncoder.
+
+
 #### Model Conclusion and Next Steps
-#### Project Scope
-##### Stakeholders
+
 
 ### Technical Stack
 #### Programming Language
@@ -223,6 +262,5 @@ After data exploration with SQL and a exploratory data visualization, with liter
 - 1. Financial Fraud: A Review of Anomaly Detection Techniques and Recent Advances
 Hilal et al. - Expert Systems with Applications - 2022, https://doi.org/10.1016/j.eswa.2021.116429
 
-# financial_fraud_detection_project
-Detecting financial fraud using data analysis and machine learning techniques.
+
 
