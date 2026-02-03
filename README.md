@@ -68,7 +68,7 @@ This project focuses on developing a machine learning model capable of accuratel
 - Customers
   - Benefit from increased protection of their accounts and reduced exposure to fraudulent activity.
 
-### Dataset Fraud Detection Scores:
+### Dataset Fraud Detection Scores
 
 The dataset selected from Kaggle consists of 5 million synthetically generated financial transactions. It is designed to simulate real-world transactional behavior for fraud detection research and machine learning applications.
 
@@ -89,7 +89,7 @@ The dataset includes 18 attributes, among them the target variable is_fraud and 
   It is a measure of geographic inconsistencies in transaction locations. It compares the current transaction location with previous ones and checks whether the distance and timing are feasible. For example, a purchase in Toronto followed by another in Tokyo within 10 minutes would be flagged.
   A high score indicates impossible or highly improbable travel and is therefore suspicious. A low score means the transaction location is consistent with the customer’s usual pattern.
 
-### Feature description:
+### Feature description
 
 | Feature                     | Type      | Distinct Values | Description                                                                   | Notes                                                                                  |
 | --------------------------- | --------- | --------------- | ----------------------------------------------------------------------------- | -------------------------------------------------------------------------------------- |
@@ -122,13 +122,13 @@ The initial data exploration revealed that the dataset has a significant class i
 
 The dataset spans a one-year period, from 2023-01-01 to 2024-01-01. In addition, all columns are stored in a consistent internal format, and no random spaces were found; therefore, no adjustments were required.
 
-**Missing and Null Values**
+**Missing and Null Values:**
 
 Data exploration identified two features with NULL values: time_since_last_transaction (896,513) and fraud_type (4,820,447).
 
 However, no NULL values were found among positive fraud cases. All NULL values belong to the is_fraud = FALSE category, as this group contains the largest number of observations, with a non-fraud transaction ratio of 0.96 compared to a fraud transaction ratio of 0.035. Therefore, removing records with NULL values does not affect the minority class, which is also the class of interest for identifying fraud patterns.
 
-**Identifier Features for Future Anonymization**
+**Identifier Features for Future Anonymization:**
 
 sender_account, receiver_account, transaction_id, ip_address and device_hash.
 
@@ -142,7 +142,7 @@ These results suggest that fraudulent activity is highly concentrated in specifi
 
 Both sender_account and receiver_account show a highly skewed distribution. Most accounts appear only once or twice, while very few accounts appear multiple times. For example, in sender_account, only one value appears 7 times and two values appear 5 times, compared to more than 145,000 values that appear only once. A similar pattern is observed for receiver_account, indicating that repeated accounts are extremely rare and that the dataset is dominated by unique or low-frequency account identifiers.
 
-**Negative values on time_since_last_transaction**
+**Negative values on time_since_last_transaction:**
 
 Negative values were found in the time_since_last_transaction feature. The dataset does not provide information about how this variable was calculated or why negative values exist.
 
@@ -152,7 +152,7 @@ Additional analyses were performed to understand this behavior. First, it was te
 
 Finally, transactions were grouped by sender_account, ordered by timestamp, and the time differences were recalculated. This approach also showed no meaningful pattern, likely because the dataset does not contain complete transaction histories for each user. As a result, this feature cannot be reliably reconstructed or interpreted.
 
-**Other Features**
+**Other Feature:**
 
 Fraud cases were found across all payment_channel categories, which indicates that all categories are significant.
 From Fraud Cases positive: the Min amount was 0.01 and Max Amount was 3128.14
@@ -163,10 +163,10 @@ Data cleaning was conducted with SQL queries and The cleaned table was saved as 
 
 #### Feature engineering:
 
-- timestamp was divided in diferent columns: month, day, hour.
+- timestamp was divided in different columns: month, day, hour.
 - it was creates a new column for Day of the week using ISODOW format.
 
-#### Drop features:
+#### Drop features
 
 - timestamp.
 - fraud_type
@@ -176,11 +176,11 @@ Data cleaning was conducted with SQL queries and The cleaned table was saved as 
 The ip_address and device_hash features were removed considering:
 
 - Both are cardinal columns
-- ip_adress had only 6 repetitie values in fraud cases and a maximum of 2 repetitions.
+- ip_address had only 6 repetitions values in fraud cases and a maximum of 2 repetitions.
 - device_hash had 1,757 repeated values and a maximum of 3 repetitions.
 - Fraudulent activity is moderately concentrated in certain devices and minimally traceable through IP addresses. Given the dataset size, both features contribute little information, and their removal reduces noise and dimensionality.
 
-#### Final Features Selected:
+#### Final Features Selected
 
 - sender_account
 - receiver_account
@@ -217,17 +217,17 @@ The purpose of this predictive model is to detect and flag potentially fraudulen
 
 **MODEL 1:**
 
-- The features were separed in categorical and numerical and were dropped the high-cardinality identifiers ('sender_account', 'receiver_account', 'ip_address', 'device_hash'), that do not generalize well and can negatively affect the model training.
+- The features were separated in categorical and numerical and were dropped the high-cardinality identifiers ('sender_account', 'receiver_account', 'ip_address', 'device_hash'), that do not generalize well and can negatively affect the model training.
 
 - Date was dropped because we already extracted more meaningful features like hours and days of the week.
 
 - Data was split between training and test before apply transformers: OneHotEncoder on categorical and StandardScaler on numerical features.
 
-**MODEL 2: fraud_model_smote_undersample**
+**MODEL 2: fraud_model_smote_undersample:**
 
-- On model 2 were develop feature engieneere to generate new Fraud-Specific Features:
+- On model 2, we carried out feature engineering to generate new Fraud-Specific Features:
   - Transaction frequency features grouped by sender_account according with amount ( mean, std, count) and unique locations to get behavioral patterns.
-  - Time-based features: From date was stract: hour of day, night‑time flag (0 to 5h), business‑hours flag (9 to 17h).
+  - Time-based features: From date was strict: hour of day, night‑time flag (0 to 5h), business‑hours flag (9 to 17h).
   - Transaction amount‑based: transformations with log‑scaled amount and z‑score.
   - Behavioral anomaly scores: using existing anomaly scores.
   - Integrated payment‑method risk encoding
@@ -236,7 +236,7 @@ The purpose of this predictive model is to detect and flag potentially fraudulen
 - Final Dataset for this model had 3.282.789 (train) and 820.698 (test) rows, and closely aligned fraud rates (~4.37% vs. ~4.40%).
 - There were dropped high-cardinality categorical features ('ip_address', 'device_hash', 'location') using only useful features there where as result 4 categorical and 17 numerical features.
 - For categorical were Use target encoding instead of one-hot (better for trees and saves memory)
-- For severe imbalance, SMOTE Alone Isn't Enough (22:1 imbalance ratio). Therefore, we used combination approach: SMOTE with strategic undersampling. With oversample minority class to 10%, and Target 10% fraud in training, in addition were Use fewer neighbors for sparse minority. The Target class ratio after resampling were 25% fraud (1:3).
+- For severe imbalance, SMOTE Alone Isn't Enough (22:1 imbalance ratio). Therefore, we used combination approach: SMOTE with strategic under-sampling. With over-sampled minority class to 10%, and Target 10% fraud in training, in addition were Use fewer neighbors for sparse minority. The Target class ratio after resampling were 25% fraud (1:3).
 
 - After Smote, were train and evaluate multiple models on the training and test (no-smote) data. All four models evaluated (Logistic Regression, Random Forest, XGBoost, and LightGBM) struggle to distinguish fraud from non‑fraud, with low precision and weak PR‑AUC. They detect some fraudulent cases, but their performance is too limited and unstable for real‑world deployment.
 
@@ -252,8 +252,6 @@ The purpose of this predictive model is to detect and flag potentially fraudulen
 #### Model Conclusion and Next Steps
 
 #### Project Scope
-
-##### Stakeholders
 
 ### Technical Stack
 
@@ -277,4 +275,4 @@ The purpose of this predictive model is to detect and flag potentially fraudulen
 ### References
 
 - 1. Financial Fraud: A Review of Anomaly Detection Techniques and Recent Advances
-     Hilal et al. - Expert Systems with Applications - 2022, https://doi.org/10.1016/j.eswa.2021.116429
+     Hilal et al. - Expert Systems with Applications - 2022, <https://doi.org/10.1016/j.eswa.2021.116429>
