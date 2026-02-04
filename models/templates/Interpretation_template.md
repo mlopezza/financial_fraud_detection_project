@@ -38,7 +38,7 @@ From `classification_report`:
   “Of all actual frauds, how many did we catch?”
 
 - **F1 score:**  
-  Harmonic mean of precision and recall—good when you care about both.
+  Harmonic mean of precision and recall— good when we care about both.
 
 **How to interpret:**
 
@@ -49,9 +49,12 @@ From `classification_report`:
 - **F1:**  
   Good single-number summary, but always interpret alongside precision/recall.
 
-**Template language:**
+**Interpretation template language:**
 
 > “The model achieves a precision of P and recall of R on the fraud class. This means that when it flags a transaction as fraud, it is correct P% of the time, and it successfully detects R% of all fraud cases. The F1 score of F reflects the balance between these two.”
+
+**Example Usage of Template Language:**
+“The model achieves a precision of 0.043 and recall of 0.043 on the fraud class. This means that when it flags a transaction as fraud, it is correct 0.043% of the time, and it successfully detects 0.043% of all fraud cases. The F1 score of 0.078 reflects the balance between these two.”
 
 ---
 
