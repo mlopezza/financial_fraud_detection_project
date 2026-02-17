@@ -269,9 +269,6 @@ Different approaches were taken to train the final models:
   - A 20% sample of the dataset was selected for both models.
   - In the first Random Forest model, SMOTE was used to handle class imbalance.
   - In the second Random Forest model, SMOTE was not used; instead, a Random Forest classifier with class_weight="balanced" was applied.
-
-  **- WHAT IS THE DIFERENCE BETWEEN THE MODELS?**
-
   - Both models had a lot of false positives. Random Forest 2 performed better, with recall 0.63 vs. 0.40. In Random Forest 1, the accuracy is higher at 0.59 vs. 0.38 in RF 2.
 
 ![Confusion Matrix Random Forest](images/confusion_matrix_random_forest.png)
