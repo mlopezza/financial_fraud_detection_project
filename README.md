@@ -153,7 +153,6 @@ Repeated values were found among the identifier features (Sender_account, receiv
 
 In the fraud-positive transactions, sender_account had 16,337 repeated values, with a maximum of 7 repetitions, while receiver_account had 15,604 repeated values, with a maximum of 5 repetitions.
 
-These results suggest that fraudulent activity is highly concentrated in specific accounts.
 
 ![account_repetition_frequency_fraud_only ](images/account_repetition_frequency_fraud_only.png)  
 
@@ -252,26 +251,27 @@ Different approaches were taken to train the final models:
 - Model_comparisons_logistic_regression_vs_tree_based
 
 
-##### Models with SMOTE
+**Models with SMOTE**
 
 - **Logistic_regression_model_1**
     - The entire dataset was used to train the model.
     - Due to the size of the dataset, this model was one of the slowest models.
-    - Poor performance: the model has no discriminative power. Logistic Regression may be too weak for this dataset.
 
 ![Confusion matrix Logistic Regression Model 1](images/lgmodel1.png)
 
 
 - **Logistic_regression_model**
-    - A 20% sample of the entire dataset was taken, preserving the same class distribution as the initial dataset: False 95.6% and True 4.4%, and SMOTE was applied to balance classes.
-    - Poor performance: the model is weak at detecting fraud.
+    - A 20% sample of the entire dataset was taken.
 
 ![Confusion matrix Logistic Regression Model](images/confusion_matrix_lg_model.png)
 
 - **Random_forest and Random_forest_2**
-  - A 20% sample of the dataset was selected
-  - The class distribution was preserved
-  - SMOTE was applied and high cardinality identifiers were dropped
+  - A 20% sample of the dataset was selected for both models.
+  - In the first Random Forest model, SMOTE was used to handle class imbalance.
+  - In the second Random Forest model, SMOTE was not used; instead, a Random Forest classifier with class_weight="balanced" was applied.
+
+  **- WHAT IS THE DIFERENCE BETWEEN THE MODELS?**
+
   - Both models had a lot of false positives. Random Forest 2 performed better, with recall 0.63 vs. 0.40. In Random Forest 1, the accuracy is higher at 0.59 vs. 0.38 in RF 2.
 
 ![Confusion Matrix Random Forest](images/confusion_matrix_random_forest.png)
@@ -282,14 +282,14 @@ Different approaches were taken to train the final models:
 - **Model_comparisons_logistic_regression_vs_tree_based**
   - 2% of the entire dataset was used.
   - The final enhanced dataset was created with all engineered fraud-specific features:
-    - Transaction frequency features grouped by sender account according to amount (mean, std, count) and unique locations to capture behavioral patterns.
-    - Time-based features: extracted from date strictly as hour of day, night-time flag (0 to 5h), and business-hours flag (9 to 17h).
-    - Transaction amount-based features: transformations with log-scaled amount and z-score.
-    - Behavioral anomaly scores: derived from existing anomaly scores.
-    - Integrated payment-method risk encoding.
+    - Transaction frequency features grouped by sender account according to amount (mean, std, count) and unique locations to capture **behavioral patterns**.
+    - **Time-based features:** extracted from date strictly as hour of day, night-time flag (0 to 5h), and business-hours flag (9 to 17h).
+    - **Transaction amount-based features**: transformations with log-scaled amount and z-score.
+    - **Behavioral anomaly scores:** derived from existing anomaly scores.
+    - **Integrated payment-method risk encoding**.
   - The train and test datasets were split by sorting transactions chronologically, allocating the oldest 80% for training and the most recent 20% for testing to avoid temporal leakage, falling back to a stratified split when time data was unavailable.
   - The final dataset for this model had 3,282,789 (train) and 820,698 (test) rows, with closely aligned fraud rates (~4.37% vs. ~4.40%).
-  - High-cardinality categorical features ('ip_address', 'device_hash', 'location') were dropped, resulting in 4 categorical and 17 numerical features.
+  - Final dataset had 4 categorical and 17 numerical features.
   - For categorical features, target encoding was used instead of one-hot encoding, as it performs better for tree-based models and reduces memory usage.
   - Due to severe class imbalance (22:1 ratio), SMOTE alone was insufficient. Therefore, a combination approach was used: SMOTE with strategic under-sampling, oversampling the minority class to 10%. Additionally, fewer neighbors were used for the sparse minority class. The target class ratio after resampling was 25% fraud (1:3).
   - After applying SMOTE, multiple models were trained and evaluated on the training and test (non-SMOTE) data. All four models evaluated — Logistic Regression, Random Forest, XGBoost, and LightGBM — struggled to distinguish fraud from non-fraud, showing low precision and weak PR-AUC. While they detected some fraudulent cases, their performance was too limited and unstable for real-world deployment.
@@ -312,7 +312,6 @@ Different approaches were taken to train the final models:
   - Models compared: RandomForest + SMOTE, Balanced Random Forest, XGBoost, and LightGBM.
   - 20% of the original dataset was used as a sample.
   - Balanced Random Forest was used to balance the dataset.
-  - Poor performance overall; the best performing model among these was LightGBM.
 
 ![Confusion Matrix Tree Based Models Comparison](images/tree_based_models_comparison.png)
 
