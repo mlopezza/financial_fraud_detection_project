@@ -34,7 +34,10 @@ Detecting financial fraud using data analysis and machine learning techniques. I
 
 - Mariluz Lopez Zamora
 - Joshua Okojie
+
+### Initial Phase Contributor
 - Lindsay Hudson
+
 
 ## Chosen Dataset: Financial Transactions Dataset for Fraud Detection
 
@@ -181,7 +184,7 @@ Data cleaning was conducted with SQL queries and The cleaned table was saved as 
 - Timestamp was divided in different columns: month, day, hour.
 - It was creates a new column for Day of the week using ISODOW format.
 
-![temporal_fraud_comparison ](images/temporal_fraud_comparison.png) 
+![temporal_fraud_comparison ](images/temporal_fraud_comparison_2.png) 
 
 
 #### Drop features
